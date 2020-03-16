@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="IRIS" version="26" zv="IRIS for Windows (x86-64) 2019.1.1 (Build 612U)" ts="2020-03-16 11:53:32">
+<Class name="Precious.ContractApp">
+<SqlTableName>MobileUser</SqlTableName>
+<Super>%Persistent,%Populate</Super>
+<TimeChanged>65427,40235.337665</TimeChanged>
+<TimeCreated>65421,55292.299497</TimeCreated>
+
+<Property name="CustomName">
+<Type>%String</Type>
+</Property>
+
+<Property name="CustomPhoneNumber">
+<Type>%String</Type>
+</Property>
+
+<Property name="CustomAddress">
+<Type>%String</Type>
+</Property>
+
+<Property name="DOB">
+<Type>%String</Type>
+</Property>
+
+<Storage name="Default">
+<Type>%Storage.Persistent</Type>
+<DataLocation>^Precious.ContractAppD</DataLocation>
+<DefaultData>ContractAppDefaultData</DefaultData>
+<IdLocation>^Precious.ContractAppD</IdLocation>
+<IndexLocation>^Precious.ContractAppI</IndexLocation>
+<StreamLocation>^Precious.ContractAppS</StreamLocation>
+<Data name="ContractAppDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>ClientName</Value>
+</Value>
+<Value name="3">
+<Value>PhoneNumber</Value>
+</Value>
+<Value name="4">
+<Value>ClientAddress</Value>
+</Value>
+<Value name="5">
+<Value>DOB</Value>
+</Value>
+<Value name="6">
+<Value>CustomName</Value>
+</Value>
+<Value name="7">
+<Value>CustomPhoneNumber</Value>
+</Value>
+<Value name="8">
+<Value>CustomAddress</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+
+
+<Class name="Precious.CustomPhoneRequest">
+<Super>Ens.Request</Super>
+<TimeChanged>65427,42616.073294</TimeChanged>
+<TimeCreated>65421,56092.053368</TimeCreated>
+
+<Property name="CustomName">
+<Type>%String</Type>
+</Property>
+
+<Property name="CustomPhoneNumber">
+<Type>%String</Type>
+</Property>
+
+<Property name="CustomAddress">
+<Type>%String</Type>
+</Property>
+
+<Property name="DOB">
+<Type>%String</Type>
+</Property>
+
+<Storage name="Default">
+<Type>%Storage.Persistent</Type>
+<DefaultData>CustomPhoneRequestDefaultData</DefaultData>
+<Data name="CustomPhoneRequestDefaultData">
+<Structure>listnode</Structure>
+<Subscript>"CustomPhoneRequest"</Subscript>
+<Value name="1">
+<Value>CustomName</Value>
+</Value>
+<Value name="2">
+<Value>CustomPhoneNumber</Value>
+</Value>
+<Value name="3">
+<Value>CustomAddress</Value>
+</Value>
+<Value name="4">
+<Value>DOB</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+
+
+<Class name="Precious.CustomPhoneText">
+<Super>Ens.BusinessOperation</Super>
+<TimeChanged>65427,56924.613044</TimeChanged>
+<TimeCreated>65427,42192.127722</TimeCreated>
+
+<Parameter name="ADAPTER">
+<Default>EnsLib.File.OutboundAdapter</Default>
+</Parameter>
+
+<Property name="Adapter">
+<Type>EnsLib.File.OutboundAdapter</Type>
+</Property>
+
+<Parameter name="INVOCATION">
+<Default>Queue</Default>
+</Parameter>
+
+<Method name="ClientText">
+<FormalSpec>pRequest:Precious.CustomPhoneRequest,*pResponse:Precious.CustomResponse</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	
+	set output = "Dear"_pRequest.CustomName
+	set output = output_"Your contract number is"_pRequest.CustomPhoneNumber
+	set output = output_"From"_pRequest.CustomAddress
+	set output = output_"Your date of birth is"_pRequest.DOB
+	
+	set tSC = $$$OK
+	
+	try {
+		&sql(INSERT INTO Precious.MobileUser 
+		(CustomName, customPhoneNumber, CustomAddress, DOB)
+		VALUES (:pRequest.CustomName, :pRequest.CustomPhoneNumber,
+		 :pRequest.CustomAddress, :pRequest.DOB))
+		 
+		 set precious = pRequest.CustomName_".txt"
+		 
+		 set precious = ..Adapter.PutString(precious,output)
+		 
+	}
+	catch ex{
+		set tSC = ex.AsStatus
+	}
+	quit tSC
+]]></Implementation>
+</Method>
+
+<XData name="MessageMap">
+<Data><![CDATA[
+<MapItems>
+	<MapItem MessageType="Precious.CustomPhoneRequest"> 
+		<Method>ClientText</Method>
+	</MapItem>
+</MapItems>
+]]></Data>
+</XData>
+</Class>
+
+
+<Class name="Precious.CustomRequest">
+<Super>Ens.Request</Super>
+<TimeChanged>65427,41505.259884</TimeChanged>
+<TimeCreated>65422,56423.847727</TimeCreated>
+
+<Property name="CustomName">
+<Type>%String</Type>
+</Property>
+
+<Storage name="Default">
+<Type>%Storage.Persistent</Type>
+<DefaultData>CustomRequestDefaultData</DefaultData>
+<Data name="CustomRequestDefaultData">
+<Subscript>"CustomRequest"</Subscript>
+<Value name="1">
+<Value>CustomName</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+
+
+<Class name="Precious.CustomResponse">
+<Super>Ens.Response</Super>
+<TimeChanged>65427,42652.74321</TimeChanged>
+<TimeCreated>65422,56619.049219</TimeCreated>
+
+<Property name="CustomPhoneNumber">
+<Type>%String</Type>
+</Property>
+
+<Storage name="Default">
+<Type>%Storage.Persistent</Type>
+<DefaultData>CustomResponseDefaultData</DefaultData>
+<Data name="CustomResponseDefaultData">
+<Subscript>"CustomResponse"</Subscript>
+<Value name="1">
+<Value>PhoneNumber</Value>
+</Value>
+<Value name="2">
+<Value>CustomPhoneNumber</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+
+
+<Class name="Precious.CustomResponses">
+<Super>Ens.BusinessOperation</Super>
+<TimeChanged>65441,39627.425371</TimeChanged>
+<TimeCreated>65427,38961.895519</TimeCreated>
+
+<Parameter name="ADAPTER">
+<Default>EnsLib.File.OutboundAdapter</Default>
+</Parameter>
+
+<Property name="Adapter">
+<Type>EnsLib.File.OutboundAdapter</Type>
+</Property>
+
+<Parameter name="INVOCATION">
+<Default>Queue</Default>
+</Parameter>
+
+<Method name="ClientFeedText">
+<FormalSpec>pRequest:Precious.CustomRequest,*pResponse:Precious.CustomResponse</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set tSC = $$$OK
+	try{
+		
+		set result = ##class(%SQL.Statement).%ExecDirect(, "SELECT * FROM Precious.MobileUser WHERE CustomName = 'felicia'")
+		
+		do result.%Next()
+		
+		set pResponse = ##class(Precious.CustomResponse).%New()
+		//set pResponse.PhoneNumber = result.PhoneNumber .... keep in mind every time you touch the result object it will iterate to it's next line
+		
+		set phonenumber = result.CustomPhoneNumber
+		
+		set message = "Your Number is: "_phonenumber
+		set PreciousMobile = pRequest.CustomName_".txt"
+		set tSC = ..Adapter.PutString(PreciousMobile, message)
+		set pResponse.CustomPhoneNumber = phonenumber
+		
+		}
+		catch ex{
+			set tSC = ex.AsStatus()
+		}
+		quit tSC
+]]></Implementation>
+</Method>
+
+<XData name="MessageMap">
+<Data><![CDATA[
+<MapItems>
+	<MapItem MessageType="Precious.CustomRequest"> 
+		<Method>ClientFeedText</Method>
+	</MapItem>
+</MapItems>
+]]></Data>
+</XData>
+</Class>
+
+
+<Class name="Precious.CustomService">
+<Super>Ens.BusinessService</Super>
+<TimeChanged>65428,51495.950982</TimeChanged>
+<TimeCreated>65428,29419.870674</TimeCreated>
+
+<Parameter name="ADAPTER">
+<Default>EnsLib.File.InboundAdapter</Default>
+</Parameter>
+
+<Method name="OnProcessInput">
+<FormalSpec>pInput:%Stream.Object,*pOutput:Precious.CustomRequest</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+	set tSC = $$$OK
+	
+	try{
+		set pRequest = ##class(Precious.CustomRequest).%New() //new production message...
+          set Line = pInput.ReadLine()
+          set CustomName = $piece(Line,":",2)
+          set pRequest.CustomName = CustomName
+          //do pInput.ReadLine()
+          set tSC =..SendRequestSync("Precious.customRouter",pRequest,.pOutput) //set tSC =..SendRequestSync("customRouter",pRequest,.pOutput)   
+	} catch ex{
+		set tSC = ex.AsStatus()
+	}
+	//quit tSC 
+	return tSC
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="Precious.NewMessage1">
+<Super>Ens.Request</Super>
+<TimeChanged>65434,58970.505309</TimeChanged>
+<TimeCreated>65434,58921.358616</TimeCreated>
+
+<Property name="Create">
+<Type>%String</Type>
+</Property>
+
+<Storage name="Default">
+<Type>%Storage.Persistent</Type>
+<DefaultData>NewMessage1DefaultData</DefaultData>
+<Data name="NewMessage1DefaultData">
+<Structure>listnode</Structure>
+<Subscript>"NewMessage1"</Subscript>
+<Value name="1">
+<Value>Create</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+
+
+<Class name="Precious.Precious.ClientSms">
+<Super>Ens.Production</Super>
+<TimeChanged>65428,51758.746829</TimeChanged>
+<TimeCreated>65422,36391.73999</TimeCreated>
+
+<XData name="ProductionDefinition">
+<Data><![CDATA[
+<Production Name="Precious.Precious.ClientSms" TestingEnabled="true" LogGeneralTraceEvents="false">
+  <Description></Description>
+  <ActorPoolSize>2</ActorPoolSize>
+  <Item Name="Precious.CustomResponses" Category="" ClassName="Precious.CustomResponses" PoolSize="2" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+    <Setting Target="Adapter" Name="FilePath">C:\Users\Intern\Desktop\PreciousMobile\</Setting>
+  </Item>
+  <Item Name="Precious.CustomPhoneText" Category="" ClassName="Precious.CustomPhoneText" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+    <Setting Target="Adapter" Name="FilePath">C:\Users\Intern\Desktop\PreciousMobile\</Setting>
+  </Item>
+  <Item Name="Precious.customRouter" Category="" ClassName="Precious.customRouter" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+  </Item>
+  <Item Name="Precious.CustomService" Category="" ClassName="Precious.CustomService" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+    <Setting Target="Adapter" Name="ArchivePath">C:\Users\Intern\Desktop\Test2\</Setting>
+    <Setting Target="Adapter" Name="FilePath">C:\Users\Intern\Desktop\Test\</Setting>
+    <Setting Target="Adapter" Name="FileSpec">*.txt</Setting>
+    <Setting Target="Adapter" Name="WorkPath"></Setting>
+  </Item>
+</Production>
+]]></Data>
+</XData>
+</Class>
+
+
+<Class name="Precious.customRouter.Context">
+<Description>
+This class is generated by the Precious.customRouter BPL class.
+This class should not be edited or modified in any way.
+Do not make direct use of this class in your application.</Description>
+<ClassType>persistent</ClassType>
+<CompileAfter>Precious.customRouter</CompileAfter>
+<IncludeCode/>
+<ProcedureBlock>1</ProcedureBlock>
+<Super>Ens.BP.Context</Super>
+<TimeChanged>65434,58929.599046</TimeChanged>
+<TimeCreated>65427,56000.803357</TimeCreated>
+<GeneratedBy>Ens.BPL.Compiler.CLS</GeneratedBy>
+
+<Method name="OnResponse1">
+<Description>
+Response Handler for call to Precious.CustomResponses</Description>
+<FormalSpec>process:Ens.BusinessProcess,context:Ens.BP.Context,request:Precious.CustomRequest,response:Precious.CustomResponse,callrequest:Precious.CustomRequest,callresponse:Precious.CustomResponse,callname:%String</FormalSpec>
+<Language>objectscript</Language>
+<PublicList>process,context</PublicList>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+ Set $ZT="Trap",status=$$$OK do {
+ Set status=$$$OK,response.CustomPhoneNumber=callresponse.CustomPhoneNumber
+ If $$$ISERR(status) Quit
+ } while (0)
+Exit Quit status
+Trap Set $ZT="",status=##class(Ens.Util.Error).EnsSystemError("Precious.customRouter.Thread1","OnResponse1")
+ Goto Exit
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Storage.Persistent</Type>
+</Storage>
+</Class>
+
+
+<Class name="Precious.customRouter.Thread1">
+<Description>
+This class is generated by the Precious.customRouter BPL class.
+This class should not be edited or modified in any way.
+Do not make direct use of this class in your application.</Description>
+<ClassType>persistent</ClassType>
+<CompileAfter>Precious.customRouter</CompileAfter>
+<IncludeCode/>
+<ProcedureBlock>1</ProcedureBlock>
+<Super>Ens.BP.Thread</Super>
+<TimeChanged>65434,58938.125977</TimeChanged>
+<TimeCreated>65434,58929.355053</TimeCreated>
+<GeneratedBy>Ens.BPL.Compiler.CLS</GeneratedBy>
+
+<Method name="S1">
+<FormalSpec>process:Ens.BusinessProcess,context:Ens.BP.Context,synctimedout:%Boolean,syncresponses:%ArrayOfObjects(ELEMENTTYPE="%Library.Persistent"),request:%Library.Persistent,response:%Library.Persistent</FormalSpec>
+<Language>objectscript</Language>
+<PublicList>process,context</PublicList>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+ Set $ZT="Trap",status=$$$OK do {
+ If (request.CustomName) {
+ Set ..%NextState="S3"
+ } else {
+ Set ..%NextState="S2"
+ }
+ } while (0)
+Exit Quit ..ManageState(status)
+Trap Set $ZT="",status=..ManageStatus(status,"S1") Goto Exit
+]]></Implementation>
+</Method>
+
+<Method name="S2">
+<FormalSpec>process:Ens.BusinessProcess,context:Ens.BP.Context,synctimedout:%Boolean,syncresponses:%ArrayOfObjects(ELEMENTTYPE="%Library.Persistent"),request:%Library.Persistent,response:%Library.Persistent</FormalSpec>
+<Language>objectscript</Language>
+<PublicList>process,context</PublicList>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+ Set $ZT="Trap",status=$$$OK do {
+ Do process.ClearAllPendingResponses()
+ Set ..%NextState="Stop"
+ } while (0)
+Exit Quit ..ManageState(status)
+Trap Set $ZT="",status=..ManageStatus(status,"S2") Goto Exit
+]]></Implementation>
+</Method>
+
+<Method name="S3">
+<FormalSpec>process:Ens.BusinessProcess,context:Ens.BP.Context,synctimedout:%Boolean,syncresponses:%ArrayOfObjects(ELEMENTTYPE="%Library.Persistent"),request:%Library.Persistent,response:%Library.Persistent</FormalSpec>
+<Language>objectscript</Language>
+<PublicList>process,context</PublicList>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+ Set $ZT="Trap",status=$$$OK do {
+ #; --- Begin Call CustomPhoneNumber ---
+ #; --- Begin Request ---
+ Set callrequest=##class(Precious.CustomRequest).%New()
+ If '$IsObject(callrequest) Set status=%objlasterror Quit
+ Set status=$$$OK,callrequest=request
+ If $$$ISERR(status) Quit
+ Set status=..MakeAsyncCall("OnResponse1","Precious.CustomResponses",callrequest,"CustomPhoneNumber",1,0,"CustomPhoneNumber",1)
+ If $$$ISERR(status) Quit
+ Kill callrequest
+ #; --- End Request ---
+ #; --- End Call CustomPhoneNumber ---
+ Do ..%PendingResponses.Clear(),..%SyncResponses.Clear()
+ Set ..%SyncTimedOut=0,..%PendingTimeout="",..%PendingAlarmHandle="",..%SyncName=""
+ If ..%Process.IsResponsePending("CustomPhoneNumber") Do ..%PendingResponses.SetAt("","CustomPhoneNumber")
+ If ..%PendingResponses.Count()>0 {
+    Set %name="",%alarmhandle=""
+    Set status=..%Process.MakeTimerCall("_Timeout",.%name,5,"CustomPhoneNumber",.%alarmhandle,"")
+    If $$$ISERR(status) Quit
+    Do ..%PendingResponses.SetAt("",%name) Set ..%PendingTimeout=%name,..%PendingAlarmHandle=%alarmhandle,..%SyncName=""
+ }
+ If ..%PendingResponses.Count()=0 {
+    Set ..%NextState="S5"
+ } else {
+    Set ..%NextState="S4",..%Wait=1
+ }
+ } while (0)
+Exit Quit ..ManageState(status)
+Trap Set $ZT="",status=..ManageStatus(status,"S3") Goto Exit
+]]></Implementation>
+</Method>
+
+<Method name="S4">
+<FormalSpec>process:Ens.BusinessProcess,context:Ens.BP.Context,synctimedout:%Boolean,syncresponses:%ArrayOfObjects(ELEMENTTYPE="%Library.Persistent"),request:%Library.Persistent,response:%Library.Persistent</FormalSpec>
+<Language>objectscript</Language>
+<PublicList>process,context</PublicList>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+ Set $ZT="Trap",status=$$$OK do {
+ If ..%PendingResponses.Count()=0 {
+    Set ..%NextState="S5"
+ } else {
+    Set ..%NextState="S4",..%Wait=1
+ }
+ } while (0)
+Exit Quit ..ManageState(status)
+Trap Set $ZT="",status=..ManageStatus(status,"S4") Goto Exit
+]]></Implementation>
+</Method>
+
+<Method name="S5">
+<FormalSpec>process:Ens.BusinessProcess,context:Ens.BP.Context,synctimedout:%Boolean,syncresponses:%ArrayOfObjects(ELEMENTTYPE="%Library.Persistent"),request:%Library.Persistent,response:%Library.Persistent</FormalSpec>
+<Language>objectscript</Language>
+<PublicList>process,context</PublicList>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+ Set $ZT="Trap",status=$$$OK do {
+ Set ..%NextState="S2"
+ } while (0)
+Exit Quit ..ManageState(status)
+Trap Set $ZT="",status=..ManageStatus(status,"S5") Goto Exit
+]]></Implementation>
+</Method>
+
+<Storage name="Default">
+<Type>%Storage.Persistent</Type>
+</Storage>
+</Class>
+
+
+<Class name="Precious.customRouter">
+<Description>
+</Description>
+<ClassType>persistent</ClassType>
+<ProcedureBlock>1</ProcedureBlock>
+<Super>Ens.BusinessProcessBPL</Super>
+<TimeChanged>65428,34537.116605</TimeChanged>
+<TimeCreated>65427,52656.305154</TimeCreated>
+
+<XData name="BPL">
+<Description>
+BPL Definition</Description>
+<XMLNamespace>http://www.intersystems.com/bpl</XMLNamespace>
+<Data><![CDATA[
+<process language='objectscript' request='Precious.CustomRequest' response='Precious.CustomResponse' height='2000' width='2000' >
+<sequence xend='200' yend='600' >
+<if name='CustomName' condition='request.CustomName' xpos='200' ypos='250' xend='200' yend='500' >
+<true>
+<call name='CustomPhoneNumber' target='Precious.CustomResponses' async='0' timeout='5' xpos='335' ypos='400' >
+<request type='Precious.CustomRequest' >
+<assign property="callrequest" value="request" action="set" />
+</request>
+<response type='Precious.CustomResponse' >
+<assign property="response.CustomPhoneNumber" value="callresponse.CustomPhoneNumber" action="set" />
+</response>
+</call>
+</true>
+</if>
+</sequence>
+</process>
+]]></Data>
+</XData>
+
+<Storage name="Default">
+<Type>%Storage.Persistent</Type>
+</Storage>
+</Class>
+
+
+<Package name="Precious" sqlname="Precious"/>
+</Export>
