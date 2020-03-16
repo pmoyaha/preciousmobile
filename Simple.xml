@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="IRIS" version="26" zv="IRIS for Windows (x86-64) 2019.1.1 (Build 612U)" ts="2020-03-16 11:55:21">
+<Class name="Simple.Demo">
+<TimeChanged>65442,57576.28675</TimeChanged>
+<TimeCreated>65442,48565.00794</TimeCreated>
+
+<Method name="Hello">
+<Description>
+First method in my first class </Description>
+<ClassMethod>1</ClassMethod>
+<FormalSpec>name:%String,*nameReversed:%String</FormalSpec>
+<ReturnType>%String</ReturnType>
+<Implementation><![CDATA[
+ 
+	set affirmation = ""
+	try {
+ 	    for i=1:1:$length(sname) {write !, "Welcome"}
+ 	    set nameReversed = $reverse(name)
+    set affirmation = name _ " is your friend." 
+	}
+	catch ex {
+	    write !, ex.name, " error. Affirmation requires surname argument."
+	}
+	return affirmation
+]]></Implementation>
+</Method>
+</Class>
+
+
+<Class name="Simple.NewProduction">
+<Super>Ens.Production</Super>
+<TimeChanged>65447,60112.289127</TimeChanged>
+<TimeCreated>65447,60040.78873</TimeCreated>
+
+<XData name="ProductionDefinition">
+<Data><![CDATA[
+<Production Name="Simple.NewProduction" TestingEnabled="true" LogGeneralTraceEvents="false">
+  <Description></Description>
+  <ActorPoolSize>2</ActorPoolSize>
+  <Item Name="Simple.ReadPerson" Category="" ClassName="Simple.ReadPerson" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+  </Item>
+</Production>
+]]></Data>
+</XData>
+</Class>
+
+
+<Class name="Simple.Person">
+<Super>%Persistent</Super>
+<TimeChanged>65447,59853.228527</TimeChanged>
+<TimeCreated>65447,59418.628429</TimeCreated>
+
+<Property name="Name">
+<Type>%String</Type>
+</Property>
+
+<Property name="Surname">
+<Type>%String</Type>
+</Property>
+
+<Property name="IDNumber">
+<Type>%String</Type>
+<Required>1</Required>
+</Property>
+
+<Index name="IDNumberIndex">
+<Properties>IDNumber</Properties>
+<Unique>1</Unique>
+</Index>
+
+<Storage name="Default">
+<Type>%Storage.Persistent</Type>
+<DataLocation>^Simple.PersonD</DataLocation>
+<DefaultData>PersonDefaultData</DefaultData>
+<IdLocation>^Simple.PersonD</IdLocation>
+<IndexLocation>^Simple.PersonI</IndexLocation>
+<StreamLocation>^Simple.PersonS</StreamLocation>
+<Data name="PersonDefaultData">
+<Structure>listnode</Structure>
+<Subscript/>
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>Name</Value>
+</Value>
+<Value name="3">
+<Value>Surname</Value>
+</Value>
+<Value name="4">
+<Value>IDNumber</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+
+
+<Class name="Simple.ReadPerson">
+<Super>Ens.BusinessOperation</Super>
+<TimeChanged>65447,60103.145866</TimeChanged>
+<TimeCreated>65447,59837.735287</TimeCreated>
+
+<Parameter name="INVOCATION">
+<Default>Queue</Default>
+</Parameter>
+
+<Method name="Read">
+<FormalSpec>pRequest:Simple.ReadRequest,*pResponse:Simple.ReadResponse</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+
+	set sc = $$$OK
+	
+	set person = ##class(Simple.Person).IDNumberIndexOpen(pRequest.IDNumber)
+	
+	set pResponse = ##class(Simple.ReadResponse).%New()
+	
+	set pResponse.Name = person.Name
+	
+	return sc
+]]></Implementation>
+</Method>
+
+<XData name="MessageMap">
+<Data><![CDATA[
+<MapItems>
+	<MapItem MessageType="Simple.ReadRequest"> 
+		<Method>Read</Method>
+	</MapItem>
+</MapItems>
+]]></Data>
+</XData>
+</Class>
+
+
+<Class name="Simple.ReadRequest">
+<Super>Ens.Request</Super>
+<TimeChanged>65447,59858.353352</TimeChanged>
+<TimeCreated>65447,59478.657974</TimeCreated>
+
+<Property name="IDNumber">
+<Type>%String</Type>
+</Property>
+
+<Storage name="Default">
+<Type>%Storage.Persistent</Type>
+<DefaultData>ReadRequestDefaultData</DefaultData>
+<Data name="ReadRequestDefaultData">
+<Structure>listnode</Structure>
+<Subscript>"ReadRequest"</Subscript>
+<Value name="1">
+<Value>IDNumber</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+
+
+<Class name="Simple.ReadResponse">
+<Super>Ens.Response</Super>
+<TimeChanged>65447,59858.447363</TimeChanged>
+<TimeCreated>65447,59512.462076</TimeCreated>
+
+<Property name="Name">
+<Type>%String</Type>
+</Property>
+
+<Storage name="Default">
+<Type>%Storage.Persistent</Type>
+<DefaultData>ReadResponseDefaultData</DefaultData>
+<Data name="ReadResponseDefaultData">
+<Structure>listnode</Structure>
+<Subscript>"ReadResponse"</Subscript>
+<Value name="1">
+<Value>Name</Value>
+</Value>
+</Data>
+</Storage>
+</Class>
+
+
+</Export>
