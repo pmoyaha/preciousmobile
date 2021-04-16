@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Export generator="IRIS" version="26" zv="IRIS for Windows (x86-64) 2020.1.1 (Build 408U)" ts="2021-04-16 16:02:38">
+<Class name="User.REST">
+<Super>Ens.BusinessOperation</Super>
+<TimeChanged>65850,57478.649423</TimeChanged>
+<TimeCreated>65850,56477.672382</TimeCreated>
+
+<Parameter name="ADAPTER">
+<Default>EnsLib.HTTP.OutboundAdapter</Default>
+</Parameter>
+
+<Property name="Adapter">
+<Type>EnsLib.HTTP.OutboundAdapter</Type>
+</Property>
+
+<Parameter name="INVOCATION">
+<Default>Queue</Default>
+</Parameter>
+
+<Method name="GetRest">
+<FormalSpec>pRequest:User.ValidRequest,*pResponse:User.ValiResponse</FormalSpec>
+<ReturnType>%Status</ReturnType>
+<Implementation><![CDATA[
+   	  set tSC = $$$OK
+   	  
+   	  set pResponse=##class(User.ValiResponse).%New()
+		//Setting properties as a parkage 
+      set properties ="Name,Surname,Age,DOB,Gender,Race"
+		//set request values
+      set Name = pRequest.Name
+      set Surname = pRequest.Surname
+      set Age = pRequest.Age
+      set DOB = pRequest.DOB
+      set Gender = pRequest.Gender
+      set Race = pRequest.Race
+      
+      //setting http response from the URL
+      set tResponse = ##class(%Net.HttpResponse).%New()
+		
+		//set as status to true if there is something
+      set tSC=..Adapter.Get(.tResponse,properties,Name,Surname,Age,DOB,Gender,Race)
+      
+		//check if its the object if its or exists
+      if '$IsObject(tResponse) Quit
+      
+      //convert JSON to Object
+      set obj = ##class(%DynamicObject).%FromJSON(tResponse.Data)
+     
+     /* if $$$ISERR(obj) {
+	      set pResponse.KPIValues="fuck you shittttttttt4444444"
+         quit
+      }*/
+       try{
+	      
+			set sql = "INSERT INTO SQLUser.ValiDatabase (Name,Surname,Gender,Race,Age,DOB) VALUES(?,?,?,?,?,?)"
+			set statement = ##class(%SQL.Statement).%New()
+			set sc = statement.%Prepare(sql)
+			set person = statement.%Execute(obj.Name,obj.Surname,obj.Gender,obj.Race,obj.Age,obj.DOB)
+			set pResponse.Welcome = "Okay"
+			return sc
+		}
+		catch ex{
+			set sc = ex.AsStatus()
+		}
+      return tSC
+]]></Implementation>
+</Method>
+
+<XData name="MessageMap">
+<Data><![CDATA[
+<MapItems>
+	<MapItem MessageType="User.ValidRequest"> 
+		<Method>GetRest</Method>
+	</MapItem>
+</MapItems>
+]]></Data>
+</XData>
+</Class>
+</Export>
